@@ -1,11 +1,19 @@
 package com.people.equifax.college.model;
 
+import java.io.Serializable;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Rodolfo.Quiroz 
@@ -15,7 +23,10 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "course")
-public class Course {
+public class Course implements Serializable {
+	
+	private static final long serialVersionUID = 7300857162967077521L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -25,6 +36,10 @@ public class Course {
 
 	@Column(name = "code", length = 4)
 	private String codeCourse;
+	
+	@OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
+	@JsonIgnore
+	private Set<Student> students;
 
 	public Long getId() {
 		return id;
@@ -50,9 +65,11 @@ public class Course {
 		this.codeCourse = code;
 	}
 
-	@Override
-	public String toString() {
-		return "Course [id=" + id + ", name=" + nameCourse + ", code=" + codeCourse + "]";
+	public Set<Student> getStudents() {
+		return students;
 	}
-
+	
+	public void setStudents(Set<Student> students) {
+		this.students = students;
+	}
 }

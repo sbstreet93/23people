@@ -16,13 +16,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.people.equifax.college.dto.CourseDTO;
-import com.people.equifax.college.dto.CourseDTOList;
 import com.people.equifax.college.exception.GenericException;
 import com.people.equifax.college.model.Course;
 import com.people.equifax.college.repository.CourseRepository;
 
 /**
- * @author Rodolfo.Quiroz rquiroz1988@gmail.com version 1.0
+ * @author Rodolfo.Quiroz 
+ * rquiroz1988@gmail.com 
+ * version 1.0
  */
 
 @Service
@@ -42,34 +43,28 @@ public class CourseService {
 			return new ArrayList<Course>();
 		}
 	}
+	
+	public List<CourseDTO> getAllCourses(){
+		List<CourseDTO> courses = new ArrayList<>();
+		Iterable<Course> coursesDataIterable = courseRepository.findAll();
 
-	public CourseDTOList getAllCourse(){
-		CourseDTOList courses = new CourseDTOList();
-		CourseDTO courseDTO;
-		Iterable<Course> coursesIterable;
-
-		coursesIterable = courseRepository.findAll();
-
-		for (Course course : coursesIterable) {
-			courseDTO = getCourseData(course);
-			courses.getCourseDTO().add(courseDTO);
-
+		for (Course course : coursesDataIterable) {
+			CourseDTO courseDTO = convertToDto(course);
+			courses.add(courseDTO);
 		}
 		return courses;
 	}
 
 	public CourseDTO getCourse(Long courseId) throws GenericException {
-		CourseDTO courseDtoLocal = new CourseDTO();
 		Optional<Course> optionalCourse;
-		Course courseLocal = null;
-
+		
 		optionalCourse = courseRepository.findById(courseId);
 		if (!optionalCourse.isPresent()) {
 			throw new GenericException("Client Errors", HttpStatus.NOT_FOUND);
 		}
-
-		courseLocal = optionalCourse.get();
-		courseDtoLocal = getCourseData(courseLocal);
+		
+		Course courseData = optionalCourse.get();
+		CourseDTO  courseDtoLocal = convertToDto(courseData);
 		return courseDtoLocal;
 	}
 
@@ -78,73 +73,46 @@ public class CourseService {
 			throw new GenericException("Client Errors", HttpStatus.BAD_REQUEST);
 		}
 		
-		Course courseLocal = setCourseAndCourseDto(courseDto);
+		Course courseLocal = convertToEntity(courseDto);
 		courseRepository.save(courseLocal);
 		return courseDto;
-
-	}
-
-	/**
-	 * @param courseDto
-	 * @return
-	 */
-	private Course setCourseAndCourseDto(CourseDTO courseDto) {
-		CourseDTO courseDtoLocal = new CourseDTO();
-		Course courseLocal = new Course();
-
-			courseLocal.setId(courseDto.getId());
-			courseDtoLocal.setId(courseDto.getId());
-
-			courseLocal.setName(courseDto.getName());
-			courseDtoLocal.setName(courseDto.getName());
-
-			courseDtoLocal.setCode(courseDto.getCode());
-			courseLocal.setCode(courseDto.getCode());
-		return courseLocal;
 	}
 
 	public CourseDTO updateCourse(Long courseId, CourseDTO courseDto) {
-		Optional<Course> optionalCourse = null;
-		Course course;
-		Course courseLocal;
-		CourseDTO courseDtoLocal = null;
-		try {
-			optionalCourse = courseRepository.findById(courseId);
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-
+		CourseDTO courseDtoLocal = new CourseDTO();
+		Optional<Course> optionalCourse = courseRepository.findById(courseId);
+		
 		if (optionalCourse.isPresent()) {
-			courseLocal = optionalCourse.get();
-			course = getCourse(courseLocal, courseDto);
+			Course courseLocal = optionalCourse.get();
+			Course course = getCourse(courseLocal, courseDto);
 			courseRepository.saveAndFlush(course);
-			courseDtoLocal = getCourseData(course);
+			courseDtoLocal = convertToDto(course);
 		}
 		return courseDtoLocal;
 	}
 
 	private Course getCourse(Course course, CourseDTO courseDto) {
-		Course courseLocal = new Course();
-		courseLocal.setId(courseDto.getId());
-		courseLocal.setName(courseDto.getName());
-		courseLocal.setCode(courseDto.getCode());
-		return courseLocal;
+		course.setName(courseDto.getName());
+		course.setCode(courseDto.getCode());
+		return course;
 	}
 
-	private CourseDTO getCourseData(final Course course) {
+	private CourseDTO convertToDto(final Course course) {
 		CourseDTO courseDTO = new CourseDTO();
-		courseDTO.setId(course.getId());
 		courseDTO.setName(course.getName());
 		courseDTO.setCode(course.getCode());
 		return courseDTO;
 	}
 	
+	private Course convertToEntity(CourseDTO courseDto) {
+		Course courseLocal = new Course();
+		courseLocal.setName(courseDto.getName());
+		courseLocal.setCode(courseDto.getCode());
+		return courseLocal;
+	}
+	
 	private static boolean isNull(Object object) {
         return null == object;
-    }
-	
-	private static boolean isEmpty(String text) {
-        return text.isEmpty();
     }
 
 }

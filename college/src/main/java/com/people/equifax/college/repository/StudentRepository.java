@@ -13,6 +13,6 @@ import com.people.equifax.college.model.Student;
  * version 1.0
  */
 
-public interface StudentRepository extends JpaRepository<Student, String> {
+public interface StudentRepository extends JpaRepository<Student, Long> {
 
 }

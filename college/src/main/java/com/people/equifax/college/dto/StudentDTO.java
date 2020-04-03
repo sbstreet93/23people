@@ -5,7 +5,10 @@ package com.people.equifax.college.dto;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.Size;
+
 import com.people.equifax.college.model.Course;
+import com.sun.istack.NotNull;
 
 /**
  * @author Rodolfo.Quiroz 
@@ -16,11 +19,31 @@ import com.people.equifax.college.model.Course;
 public class StudentDTO implements Serializable {
 	private static final long serialVersionUID = -9207923003929471131L;
 	
+	@NotNull
+	private Long id;
+	
+	@NotNull
 	private String rut;
+	
+	@NotNull
 	private String name;
+	
+	@NotNull
 	private String lastName;
+	
+	@Size(min = 18, message = "The age must not be less than 18 year old")
 	private int age;
+	
+	@NotNull
 	private Course course;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public String getRut() {
 		return rut;
@@ -61,11 +84,4 @@ public class StudentDTO implements Serializable {
 	public void setCourse(Course course) {
 		this.course = course;
 	}
-
-	@Override
-	public String toString() {
-		return "StudentDTO [rut=" + rut + ", name=" + name + ", lastName=" + lastName + ", age=" + age + ", course="
-				+ course + "]";
-	}
-
 }

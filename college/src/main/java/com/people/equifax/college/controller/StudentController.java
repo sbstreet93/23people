@@ -1,7 +1,11 @@
+/**
+ * 
+ */
 package com.people.equifax.college.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,49 +19,55 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.people.equifax.college.dto.CourseDTO;
-import com.people.equifax.college.exception.GenericException;
-import com.people.equifax.college.model.Course;
-import com.people.equifax.college.service.CourseService;
 
+import com.people.equifax.college.dto.StudentDTO;
+import com.people.equifax.college.exception.GenericException;
+import com.people.equifax.college.model.Student;
+import com.people.equifax.college.service.StudentService;
+
+/**
+ * @author Rodolfo.Quiroz 
+ * rquiroz1988@gmail.com
+ * version 1.0
+ */
 @RestController
 @RequestMapping("/api")
-public class CourseController {
-
+public class StudentController {
+	
 	@Autowired
-	private CourseService courseService;
-
-	@GetMapping(value = "GET/courses")
-	public ResponseEntity<List<Course>> getCoursesPaginated(@RequestParam(defaultValue = "0") Integer pageNo,
+	private StudentService studentService;
+	
+	@GetMapping(value = "GET/students")
+	public ResponseEntity<List<Student>> getStudentsPaginated(@RequestParam(defaultValue = "0") Integer pageNo,
 		@RequestParam(defaultValue = "3") Integer pageSize, @RequestParam(defaultValue = "id") String sortBy) throws GenericException {
-		List<Course> courses = new ArrayList<>();
-		ResponseEntity<List<Course>> response;
+		List<Student> students = new ArrayList<>();
+		ResponseEntity<List<Student>> response;
 		try {
-			courses = courseService.getAllCoursesPaginated(pageNo, pageSize, sortBy);
-			response = new ResponseEntity<>(courses, new HttpHeaders(), HttpStatus.OK);
+			students = studentService.getAllStudentPaginated(pageNo, pageSize, sortBy);
+			response = new ResponseEntity<>(students, new HttpHeaders(), HttpStatus.OK);
 		} catch (Exception e) {
-			response = new ResponseEntity<List<Course>>(HttpStatus.INTERNAL_SERVER_ERROR);
+			response = new ResponseEntity<List<Student>>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return response; 
 
 	}
 	
-	@GetMapping("GET/courses/all")
-	public ResponseEntity<Object> getCourses() {
+	@GetMapping("GET/students/all")
+	public ResponseEntity<Object> getStudents() {
 		ResponseEntity<Object> response;
 		try {
-			response = new ResponseEntity<>(courseService.getAllCourses(), HttpStatus.OK);
+			response = new ResponseEntity<>(studentService.getAllStudents(), HttpStatus.OK);
 		} catch (Exception e) {
             response = new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
 	}
-
-	@GetMapping("GET/courses/{id}")
-	public @ResponseBody ResponseEntity<Object> getCourseById(@PathVariable long id) throws GenericException {
+	
+	@GetMapping("GET/students/{id}")
+	public  @ResponseBody ResponseEntity<Object> getStudentById(@PathVariable long id) throws GenericException {
 		ResponseEntity<Object> response;
 		try {
-			response = new ResponseEntity<>(courseService.getCourse(id), HttpStatus.OK);
+			response = new ResponseEntity<>(studentService.getStudent(id), HttpStatus.OK);
 		} catch (GenericException error) {
 			response = new ResponseEntity<>(error.getMessage(), error.getHttpStatus());
 		} catch (Exception e) {
@@ -65,12 +75,12 @@ public class CourseController {
         }
         return response;
 	}
-
-	@PostMapping("POST/courses")
-	public @ResponseBody ResponseEntity<Object> addCourse(@RequestBody CourseDTO courseDto) throws GenericException {
+	
+	@PostMapping("POST/students")
+	public @ResponseBody ResponseEntity<Object> addStudent(@RequestBody StudentDTO studentDto) throws GenericException {
 		ResponseEntity<Object> response;
 		try {
-			response = new ResponseEntity<>(courseService.addNewCourse(courseDto), HttpStatus.CREATED);
+			response = new ResponseEntity<>(studentService.addNewStudent(studentDto), HttpStatus.CREATED);
 		}  catch (GenericException error) {
 			response = new ResponseEntity<>(error.getMessage(), error.getHttpStatus());
 		} catch (Exception e) {
@@ -78,16 +88,19 @@ public class CourseController {
         }
         return response;
 	}
-
-	@PutMapping("PUT/courses/{courseId}")
-	public @ResponseBody ResponseEntity<Object> updateCourse(@PathVariable("courseId") long courseId,
-			@RequestBody CourseDTO courseDto) throws GenericException {
+	
+	@PutMapping("PUT/students/{studentId}")
+	public @ResponseBody ResponseEntity<Object> updateStudent(@PathVariable("studentId") Long studentId,
+			@RequestBody StudentDTO studentDto) throws GenericException {
 		ResponseEntity<Object> response;
 		try {
-			response = new ResponseEntity<>(courseService.updateCourse(courseId, courseDto), HttpStatus.OK);			
+			response = new ResponseEntity<>(studentService.updateStudent(studentId, studentDto), HttpStatus.OK);			
 		} catch (Exception e) {
             response = new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return response;
 	}
+	
+	
+
 }
